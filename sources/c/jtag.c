@@ -2,7 +2,7 @@
 #include <stdio.h>  // perror, printf
 #include <stdlib.h> // exit, atoi
 #include <arpa/inet.h> // sockaddr_in, AF_INET, SOCK_STREAM, INADDR_ANY, socket etc...
-#include "../includes/tcp_functions.h"
+#include "../../includes/tcp_functions.h"
 
 #define OPEN_PORT 0
 #define RECEIVE_JTAG_BUFFER 1
