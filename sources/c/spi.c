@@ -16,7 +16,7 @@
 #define HIGH 1
 #define DEBUG 0
 #define BUFFER_SIZE 32
-
+#define svBit int
 extern int spi_master(svBit *spi_cs, svBit *spi_sclk, svBit *spi_mosi,
                      const unsigned int spi_miso, int port) {
 

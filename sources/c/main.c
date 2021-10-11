@@ -5,7 +5,7 @@
 #include <string.h> // memset
 #include <unistd.h> // read, write, close
 
-#include "../includes/tcp_functions.h"
+#include "../../includes/tcp_functions.h"
 
 int main(){
 
