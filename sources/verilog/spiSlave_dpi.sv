@@ -21,7 +21,7 @@ import "DPI-C" context function int spi_slave( input bit spi_cs,
 always @(posedge spi_clk_i,spi_cs_i)
 begin
 
-	spi_slave(spi_cs_i,spi_clk_i,spi_mosi_i,spi_miso_o,port);
+	spi_slave(spi_cs_i,spi_clk_i,spi_mosi_i,spi_miso_o);
 
     	
 end
