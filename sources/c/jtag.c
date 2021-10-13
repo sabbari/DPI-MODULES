@@ -19,6 +19,7 @@ extern int jtag_server(svBit *tck, svBit *tms, svBit *tdi,
   if(state==OPEN_PORT){
     create_socket(&serverFd);
     bind_port(port,&server,&serverFd);
+    printf("connect you jtag tcp client \n");
     listen_to_socket(&serverFd);
     accept_client(&client,port,&clientFd,&serverFd);
     state=RECEIVE_JTAG_BUFFER;}

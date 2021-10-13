@@ -29,6 +29,7 @@ extern int spi_master(svBit *spi_cs, svBit *spi_sclk, svBit *spi_mosi,
   case(OPEN_PORT):
       create_socket(&serverFd);
       bind_port(port,&server,&serverFd);
+      printf("connect you spi tcp client \n");
       listen_to_socket(&serverFd);
       accept_client(&client,port,&clientFd,&serverFd);
       state =RECEIVE;
