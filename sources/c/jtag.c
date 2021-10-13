@@ -3,13 +3,12 @@
 #include <stdlib.h> // exit, atoi
 #include <arpa/inet.h> // sockaddr_in, AF_INET, SOCK_STREAM, INADDR_ANY, socket etc...
 #include "../../includes/tcp_functions.h"
-
+ #include "svdpi.h"
 #define OPEN_PORT 0
 #define RECEIVE_JTAG_BUFFER 1
 #define DRIVE_JTAG_SIGNALS 2
 #define SEND_TDO           3
 
-#define svBit int 
 extern int jtag_server(svBit *tck, svBit *tms, svBit *tdi,
                      const unsigned int tdo, int port) {
 

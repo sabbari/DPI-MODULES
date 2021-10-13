@@ -5,7 +5,7 @@
 #include <string.h> // memset
 #include <unistd.h> // read, write, close
 #include "../../includes/tcp_functions.h"
-
+ #include "svdpi.h"
 
 #define OPEN_PORT 0
 #define RECEIVE 1
@@ -16,7 +16,6 @@
 #define HIGH 1
 #define DEBUG 0
 #define BUFFER_SIZE 32
-#define svBit int
 extern int spi_master(svBit *spi_cs, svBit *spi_sclk, svBit *spi_mosi,
                      const unsigned int spi_miso, int port) {
 
