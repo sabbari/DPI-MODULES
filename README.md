@@ -17,6 +17,7 @@ The projects contains the following modules :
 │   │   └── tcp_functions.c
 │   └── verilog
 │       ├── jtag_dpi.sv
+        ├── spi_slave.v
 │       ├── spiMaster_dpi.sv
 │       └── spiSlave_dpi.sv
 └── tcp_clients
