@@ -34,6 +34,7 @@ int bind_port(int port,struct sockaddr_in* server,int* serverFd){
         perror("Cannot bind socket");
          exit(EXIT_FAILURE);
         }
+    fcntl(*serverFd, F_SETFL, O_NONBLOCK);
     return 1;
 }
 
