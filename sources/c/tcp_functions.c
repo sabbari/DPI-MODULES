@@ -4,7 +4,7 @@
 #include <stdlib.h> // exit, atoi
 #include <string.h> // memset
 #include <unistd.h> // read, write, close
-
+#include <errno.h>
 #include "../../includes/tcp_functions.h"
 
 
@@ -34,7 +34,6 @@ int bind_port(int port,struct sockaddr_in* server,int* serverFd){
         perror("Cannot bind socket");
          exit(EXIT_FAILURE);
         }
-    fcntl(*serverFd, F_SETFL, O_NONBLOCK);
     return 1;
 }
 
@@ -46,10 +45,12 @@ int listen_to_socket(int * socketFd){
   else return 1;
 
 }
-int accept_client(struct sockaddr_in* client, int port,int* clientFd, int * serverFd ) {
+int accept_client(struct sockaddr_in* client, int port,int* clientFd, int * serverFd , int blocking) {
    socklen_t len = sizeof(*client);
-  printf("waiting for clients at port %d \n", port);
+  if(blocking==0)    fcntl(*serverFd, F_SETFL, O_NONBLOCK);
+
   if ((*clientFd = accept(*serverFd, (struct sockaddr *)client, &len)) < 0) {
+    if(errno=EAGAIN ) return 0;
     perror("accept error");
     exit(EXIT_FAILURE);
   }

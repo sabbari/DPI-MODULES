@@ -21,7 +21,7 @@ import "DPI-C" context function int spi_master( output bit spi_cs,
                                              input  int port);  
 
 
-
+parameter blocking = 0;
 initial 
     begin 
         spi_cs_o    =1;
@@ -32,7 +32,7 @@ initial
 always @(posedge sys_clk)
 begin
 
-	spi_master(spi_cs_o,spi_clk_o,spi_mosi_o,spi_miso_i,port);
+	spi_master(spi_cs_o,spi_clk_o,spi_mosi_o,spi_miso_i,blocking);
     	
 end
 endmodule
