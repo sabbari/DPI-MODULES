@@ -3,26 +3,31 @@
 #include <stdlib.h> // exit, atoi
 #include <arpa/inet.h> // sockaddr_in, AF_INET, SOCK_STREAM, INADDR_ANY, socket etc...
 #include "../../includes/tcp_functions.h"
- #include "svdpi.h"
-#define OPEN_PORT 0
-#define RECEIVE_JTAG_BUFFER 1
-#define DRIVE_JTAG_SIGNALS 2
-#define SEND_TDO           3
+#define svBit int
+// #include "svdpi.h"
 
+enum STATE {OPEN_PORT,WAIT_CLIENT,RECEIVE_JTAG_BUFFER,DRIVE_JTAG_SIGNALS,SEND_TDO};
 extern int jtag_server(svBit *tck, svBit *tms, svBit *tdi,
-                     const unsigned int tdo, int port) {
+                     const unsigned int tdo, int port, int blocking ) {
 
   static unsigned char buffer[1],tobesent_buffer[1];
-  static int state,size=0;
+  static int size=0;
+  static enum STATE state =OPEN_PORT;
   static int clientFd, serverFd; // client and server file descriptor
   static struct sockaddr_in server, client;
   if(state==OPEN_PORT){
     create_socket(&serverFd);
     bind_port(port,&server,&serverFd);
-    printf("connect you jtag tcp client \n");
+
     listen_to_socket(&serverFd);
-    accept_client(&client,port,&clientFd,&serverFd);
-    state=RECEIVE_JTAG_BUFFER;}
+      printf("connect you jtag tcp client \n");
+      printf("waiting for clients at port %d \n", port);
+      state =WAIT_CLIENT;
+     }
+  if (state ==WAIT_CLIENT){
+      state = accept_client(&client,port,&clientFd,&serverFd,blocking)==0? WAIT_CLIENT:RECEIVE_JTAG_BUFFER;
+      if(state==WAIT_CLIENT) return 1;
+      }
 
   if (state==RECEIVE_JTAG_BUFFER){ 
        if(read(clientFd, buffer,sizeof(buffer)) > 0){

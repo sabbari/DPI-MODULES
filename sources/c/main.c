@@ -8,9 +8,15 @@
 #include "../../includes/tcp_functions.h"
 
 int main(){
-
+    int i=0;
     int tck,tms,tdi,tdo=0;
-    unsigned char buffer[1];
     
+    while(1) {
+            jtag_server(&tck , &tms, &tdi, tdo, 1234,0) ;
+              printf("hi %d \n",i);
+            i+=1;
+            //sleep(1);
+                            }
+
 
 }

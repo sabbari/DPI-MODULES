@@ -7,7 +7,7 @@ module jtag_dpi(
 );
 
 parameter port = 7894;
-
+parameter blocking = 0;
 
 
 
@@ -16,7 +16,8 @@ import "DPI-C" context function int jtag_server( output bit tck,
                                              output bit tms,
                                              output bit tdi,
                                              input  bit tdo,
-                                             input  int port
+                                             input  int port,
+                                             input  int blocking 
 );
 
 
@@ -25,7 +26,7 @@ import "DPI-C" context function int jtag_server( output bit tck,
 always @(posedge sys_clk)
 begin
 
-	jtag_server(tck,tms,tdi,tdo,port);
+	jtag_server(tck,tms,tdi,tdo,port,blocking);
     	
 end
 endmodule
