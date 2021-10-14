@@ -3,8 +3,7 @@
 #include <stdlib.h> // exit, atoi
 #include <arpa/inet.h> // sockaddr_in, AF_INET, SOCK_STREAM, INADDR_ANY, socket etc...
 #include "../../includes/tcp_functions.h"
-#define svBit int
-// #include "svdpi.h"
+#include "svdpi.h"
 
 enum STATE {OPEN_PORT,WAIT_CLIENT,RECEIVE_JTAG_BUFFER,DRIVE_JTAG_SIGNALS,SEND_TDO};
 extern int jtag_server(svBit *tck, svBit *tms, svBit *tdi,

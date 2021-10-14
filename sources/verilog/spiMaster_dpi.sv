@@ -9,7 +9,7 @@ module spiMaster_dpi(
 );
 
 parameter port = 1234;
-
+parameter blocking = 0;
 
 
 
@@ -22,7 +22,7 @@ import "DPI-C" context function int spi_master( output bit spi_cs,
                                              input  int blocking);  
 
 
-parameter blocking = 0;
+
 initial 
     begin 
         spi_cs_o    =1;
