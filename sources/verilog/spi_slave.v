@@ -39,12 +39,13 @@ begin
         	end
 		end 
     1  :begin	
-
+        $write("\033[0;31m");
 		for (index=0;index<=buffer_index;index=index+1)begin 
 			$write("%c",buffer[index])  ;
 			$fflush(32'h8000_0001);
 			buffer[index]=0;
 			end	
+        $write("\033[0m");
 		state=0;
 		counter=0;
 		buffer_index=0;

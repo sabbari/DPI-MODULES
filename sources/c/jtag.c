@@ -24,7 +24,7 @@ extern int jtag_server(svBit *tck, svBit *tms, svBit *tdi,
       bind_port(port,&server,&serverFd);
 
       listen_to_socket(&serverFd);
-      printf("\nconnect you jtag tcp client : waiting at port %d \n", port );
+      printf("connect you jtag tcp client : waiting at port %d \n", port );
       state =WAIT_CLIENT;
      }
   if (state ==WAIT_CLIENT){
