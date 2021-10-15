@@ -56,7 +56,7 @@ int accept_client(struct sockaddr_in* client, int port,int* clientFd, int * serv
     exit(EXIT_FAILURE);
   }
   char *client_ip = inet_ntoa(client->sin_addr);
-  printf("Accepted new connection from a client %s:%d\n", client_ip,
+  printf("\nAccepted new connection from a client %s:%d\n", client_ip,
          ntohs(client->sin_port));
 
   int flags = fcntl(*clientFd, F_GETFL, 0);

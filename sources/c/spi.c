@@ -27,9 +27,7 @@ extern int spi_master(svBit *spi_cs, svBit *spi_sclk, svBit *spi_mosi,
       create_socket(&serverFd);
       bind_port(port,&server,&serverFd);
       listen_to_socket(&serverFd);
-      printf("connect you spi tcp client \n");
-      printf("waiting for clients at port %d \n", port);
-      //accept_client(&client,port,&clientFd,&serverFd);
+      printf("connect you spi tcp client: waiting  at port %d \n", port);
       state =WAIT_CLIENT;
   case (WAIT_CLIENT):
      state = accept_client(&client,port,&clientFd,&serverFd,blocking)==0? WAIT_CLIENT:RECEIVE;
