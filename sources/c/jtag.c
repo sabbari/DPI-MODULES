@@ -4,13 +4,9 @@
 #include <arpa/inet.h> // sockaddr_in, AF_INET, SOCK_STREAM, INADDR_ANY, socket etc...
 #include "../../includes/tcp_functions.h"
 #include "svdpi.h"
-#include <signal.h>
 #include <unistd.h> // read, write, close
-void my_handler(int s){
-           printf("Caught signal %d\n",s);
-           exit(1); 
 
-}
+
 enum STATE {OPEN_PORT,WAIT_CLIENT,RECEIVE_JTAG_BUFFER,DRIVE_JTAG_SIGNALS,SEND_TDO};
 extern int jtag_server(svBit *tck, svBit *tms, svBit *tdi,
                      const unsigned int tdo, int port, int blocking ) {
@@ -18,22 +14,16 @@ extern int jtag_server(svBit *tck, svBit *tms, svBit *tdi,
   static unsigned char buffer[1],tobesent_buffer[1];
   static int size=0;
   static enum STATE state =OPEN_PORT;
-  static int clientFd, serverFd; // client and server file descriptor
   static struct sockaddr_in server, client;
-  static  struct sigaction sigIntHandler;
+  static int clientFd, serverFd; // client and server file descriptor
 
   if(state==OPEN_PORT){
 
-    sigIntHandler.sa_handler = my_handler;
-    sigemptyset(&sigIntHandler.sa_mask);
-    sigIntHandler.sa_flags = 0;
+      create_socket(&serverFd);
 
-    sigaction(SIGINT, &sigIntHandler, NULL);
+      bind_port(port,&server,&serverFd);
 
-    create_socket(&serverFd);
-    bind_port(port,&server,&serverFd);
-
-    listen_to_socket(&serverFd);
+      listen_to_socket(&serverFd);
       printf("connect you jtag tcp client \n");
       printf("waiting for clients at port %d \n", port);
       state =WAIT_CLIENT;

@@ -14,12 +14,13 @@ Create a socket and return the socket file descriptor number
 */
 
 int create_socket(int *socketFd){
-
+  int true = 1;
   *socketFd = socket(AF_INET, SOCK_STREAM, 0);
   if (*socketFd < 0) {
     perror("Cannot create socket");
    exit(EXIT_FAILURE);
-  }else {
+  }else {     
+      setsockopt(*socketFd,SOL_SOCKET,SO_REUSEADDR,&true,sizeof(int));
       return *socketFd ;
   }
 
