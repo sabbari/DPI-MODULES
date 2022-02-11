@@ -1,3 +1,8 @@
+#include "vpi_user.h"
+
+
+
+
 #include <arpa/inet.h> // sockaddr_in, AF_INET, SOCK_STREAM, INADDR_ANY, socket etc...
 #include <fcntl.h>
 #include <stdio.h>  // perror, printf
@@ -6,6 +11,9 @@
 #include <unistd.h> // read, write, close
 #include <errno.h>
 #include "../../includes/tcp_functions.h"
+
+#define printf vpi_printf
+
 
 
 
