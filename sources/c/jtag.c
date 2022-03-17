@@ -4,6 +4,7 @@
 #include <arpa/inet.h> // sockaddr_in, AF_INET, SOCK_STREAM, INADDR_ANY, socket etc...
 #include "../../includes/tcp_functions.h"
 #include "svdpi.h"
+#include <unistd.h> // read, write, close
 
 #include "vpi_user.h"
 
