@@ -4,7 +4,11 @@
 #include <arpa/inet.h> // sockaddr_in, AF_INET, SOCK_STREAM, INADDR_ANY, socket etc...
 #include "../../includes/tcp_functions.h"
 #include "svdpi.h"
+#include <unistd.h> // read, write, close
 
+#include "vpi_user.h"
+
+#define printf vpi_printf
 enum STATE {OPEN_PORT,WAIT_CLIENT,RECEIVE_JTAG_BUFFER,DRIVE_JTAG_SIGNALS,SEND_TDO};
 extern int jtag_server(svBit *tck, svBit *tms, svBit *tdi,
                      const unsigned int tdo, int port, int blocking ) {
@@ -54,6 +58,7 @@ extern int jtag_server(svBit *tck, svBit *tms, svBit *tdi,
   
     state = RECEIVE_JTAG_BUFFER;
     return 0;}
+  return 0;
  
 }
 
