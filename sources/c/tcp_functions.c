@@ -1,4 +1,4 @@
-#include "vpi_user.h"
+// #include "vpi_user.h"
 
 
 
@@ -12,7 +12,7 @@
 #include <errno.h>
 #include "../../includes/tcp_functions.h"
 
-#define printf vpi_printf
+//#define printf vpi_printf
 
 
 
