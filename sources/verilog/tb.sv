@@ -1,9 +1,6 @@
 `timescale 1ns/1ps
 
-module testbench (
-  input               clk,
-  input               reset
-);
+module testbench ;
 
    wire                ram_io_axi_ar_ready;
   wire                ram_io_axi_aw_ready;
@@ -86,8 +83,47 @@ module testbench (
     .masterAxi_r_payload_data   (ram_io_axi_r_payload_data[31:0]          ), //i
     .masterAxi_r_payload_resp   (ram_io_axi_r_payload_resp[1:0]           ), //i
     .masterAxi_r_payload_last   (ram_io_axi_r_payload_last                ), //i
-    .clk                        (clk                                      ), //i
+    .clk                        (clk2                                      ), //i
     .reset                      (reset                                    )  //i
   );
+
+wire reset,clk,clk2;
+
+initial 
+begin 
+	$vcdpluson();
+    $vcdplusmemon();
+    
+    #10;
+    reset = 0;
+    #1000;
+    reset = 1;
+    
+	
+    #(10*100);
+	rstb = 0;
+end
+
+always 
+begin
+
+    clk = 1'b1; 
+    #10; 
+    clk = 1'b0;
+    #10; 
+end
+
+always 
+begin
+
+    clk2 = 1'b1; 
+    #5; 
+    clk2 = 1'b0;
+    #5; 
+end
+
+
+
+
 
 endmodule
