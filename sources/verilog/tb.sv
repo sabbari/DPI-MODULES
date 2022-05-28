@@ -678,10 +678,13 @@ begin
     reset = 0;
     #1000;
     reset = 1;
-    
+    testbench.axi_dpi.aximaster.tcpBus_wdata_ready=0;
 	
     #(10*100);
 	reset = 0;
+
+    #(100*100);
+    $finish();
 end
 
 always 

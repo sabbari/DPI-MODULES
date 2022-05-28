@@ -54,7 +54,7 @@ extern int axi_server(int *write,
   if (state == RECEIVE_CMD)
   {
     printf("RECEIVE_CMD \n");
-    read(clientFd, &size, sizeof(size));
+    if(!read(clientFd, &size, sizeof(size)))return 1;
     read(clientFd, &flags, sizeof(flags));
     read(clientFd, buffer, size);
     read(clientFd, &address, sizeof(address));
@@ -92,9 +92,9 @@ extern int axi_server(int *write,
         unsigned int tmp=0x11223344;
         send_to_client(clientFd,(unsigned char *) &tmp, 4);
         tmp=0;
-        send_to_client(clientFd,(unsigned char *) &tmp, 4);
+        send_to_client(clientFd,(unsigned char *) &tmp, size);
         tmp=rsp;
-        send_to_client(clientFd,(unsigned char *) &tmp, 4);
+        send_to_client(clientFd,(unsigned char *) &tmp, 1);
         state=RECEIVE_CMD;
         printf("write response sent \n");
         return 1;
@@ -109,10 +109,10 @@ extern int axi_server(int *write,
       {
         unsigned int tmp=0x55667788;
         send_to_client(clientFd,(unsigned char *) &tmp, 4);
-        tmp=rsp;
-        send_to_client(clientFd,(unsigned char *) &tmp, 4);
         tmp=rdata_payload;
-        send_to_client(clientFd,(unsigned char *) &tmp, 4);
+        send_to_client(clientFd,(unsigned char *) &tmp, size);
+        tmp=rsp;
+        send_to_client(clientFd,(unsigned char *) &tmp, 1);
         state=RECEIVE_CMD;
         printf("read responsesent \n");
         return 1;

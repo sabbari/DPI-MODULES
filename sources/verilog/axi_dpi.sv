@@ -350,8 +350,7 @@ int value ;
 always @(posedge clk)
 begin
 
-	axi_server(write,addr,wdata_valid,rdata_ready,wdata_payload,rsp,rdata_payload,rdata_valid,wdata_ready,port,blocking);
-    	
+	axi_server(write,addr,wdata_valid,rdata_ready,wdata_payload,rsp,rdata_payload,rdata_valid,1,port,blocking);    	
 end
 
  simpleAxi4Master aximaster(
