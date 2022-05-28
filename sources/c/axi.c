@@ -53,15 +53,17 @@ extern int axi_server(int *write,
 
   if (state == RECEIVE_CMD)
   {
+    printf("RECEIVE_CMD \n");
     read(clientFd, &size, sizeof(size));
     read(clientFd, &flags, sizeof(flags));
     read(clientFd, buffer, size);
     read(clientFd, &address, sizeof(address));
-    state == DRIVE_AXI;
+    state = DRIVE_AXI;
   }
 
   if (state == DRIVE_AXI)
   {
+    printf("DRIVE_AXI \n");
     *addr = address;
     if (flags & 1)
     {
@@ -77,6 +79,7 @@ extern int axi_server(int *write,
   }
   if (state == SEND_RESP)
   {
+    printf("SEND_RESP\n");
 
     if (flags & 1)
     {
