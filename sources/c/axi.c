@@ -3,14 +3,14 @@
 #include <stdlib.h>    // exit, atoi
 #include <arpa/inet.h> // sockaddr_in, AF_INET, SOCK_STREAM, INADDR_ANY, socket etc...
 #include "../../includes/tcp_functions.h"
-//#include "svdpi.h"
+#include "svdpi.h"
 #include <unistd.h> // read, write, close
 
 //#include "vpi_user.h"
 
 enum STATE
 {
-  OPEN_PORT,
+  OPEN_PORT=0,
   WAIT_CLIENT,
   RECEIVE_CMD,
   DRIVE_AXI,
@@ -27,13 +27,13 @@ extern int axi_server(int *write,
                       int port, int blocking)
 {
 
-  static unsigned char buffer[32], tobesent_buffer[32];
+	static unsigned char buffer[32], tobesent_buffer[32];
   static unsigned int size, flags, mask, address;
 
   static enum STATE state = OPEN_PORT;
   static int clientFd, serverFd; // client and server file descriptor
  static struct sockaddr_in server, client;
-
+	printf("state %d \n", state);
   if (state == OPEN_PORT)
   {
     create_socket(&serverFd);

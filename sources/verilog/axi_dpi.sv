@@ -322,37 +322,39 @@ module axi_dpi(
 
 
 import "DPI-C" context function int axi_server(
-                      output int write,
+                      output bit write,
                       output int addr,
-                      output int wdata_valid,
-                      output int rdata_ready,
+                      output bit wdata_valid,
+                      output bit rdata_ready,
                       output int wdata_payload,
                       input int rsp,
                       input int rdata_payload,
-                      input int rdata_valid,
-                      input int wdata_ready,
+                      input bit rdata_valid,
+                      input bit wdata_ready,
                       input int port,
                       input int blocking
 );
 
-
-wire [31:0] addr;
-wire [31:0] wdata_payload;
+parameter port = 7897;
+parameter blocking = 1;
+reg [31:0] addr;
+reg [31:0] wdata_payload;
 wire [31:0] rdata_payload;
 wire [1:0] rsp;
-wire write;
-wire wdata_valid;
-wire rdata_ready;
+reg write;
+reg wdata_valid;
+reg rdata_ready;
 wire rdata_valid;
 wire wdata_ready;
+int value ;
 always @(posedge clk)
 begin
 
-	axi_server(write,addr,wdata_valid,rdata_ready,wdata_payload,rsp,rdata_payload,rdata_valid,wdata_ready,7897,1);
+	axi_server(write,addr,wdata_valid,rdata_ready,wdata_payload,rsp,rdata_payload,rdata_valid,wdata_ready,port,blocking);
     	
 end
 
-aximaster simpleAxi4Master(
+ simpleAxi4Master aximaster(
   .masterAxi_aw_valid(masterAxi_aw_valid),
   .masterAxi_aw_ready(masterAxi_aw_ready),
   .masterAxi_aw_payload_addr(masterAxi_aw_payload_addr),
