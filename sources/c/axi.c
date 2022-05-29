@@ -5,6 +5,7 @@
 #include "../../includes/tcp_functions.h"
 #include "svdpi.h"
 #include <unistd.h> // read, write, close
+#include <sys/ioctl.h>
 #include <errno.h>
 //#include "vpi_user.h"
 
@@ -52,7 +53,8 @@ extern int axi_server(int *write,
 
   static enum STATE state = OPEN_PORT;
   static int clientFd, serverFd; // client and server file descriptor
- static struct sockaddr_in server, client;
+  static struct sockaddr_in server, client;
+  int available_bytes=0;
 //	printf("state %d \n", state);
   if (state == OPEN_PORT)
   {
@@ -73,6 +75,8 @@ extern int axi_server(int *write,
 
   if (state == RECEIVE_CMD)
   {
+    ioctl(clientFd, FIONREAD, &available_bytes);
+    if(available_bytes<=0)return 1;
     printf("RECEIVE_CMD \n");
     saferead(clientFd, &size, sizeof(size));
     saferead(clientFd, &flags, sizeof(flags));
@@ -103,8 +107,6 @@ extern int axi_server(int *write,
   }
   if (state == SEND_RESP)
   {
-    //printf("SEND_RESP\n");
-
     if (flags & 1)
     {
       if (!wdata_ready)
@@ -120,7 +122,6 @@ extern int axi_server(int *write,
         tmp=rsp;
         send_to_client(clientFd,(unsigned char *) &tmp, 1);
         state=RECEIVE_CMD;
-        printf("write response sent \n");
         return 1;
       }
     }
@@ -133,16 +134,12 @@ extern int axi_server(int *write,
       {
         unsigned int tmp=0x55667788;
         int cnt=0;
-	cnt=send_to_client(clientFd,(unsigned char *) &tmp, 4);
-        printf("sent dummy %d \n",cnt);
-	tmp=rdata_payload;
+	      cnt=send_to_client(clientFd,(unsigned char *) &tmp, 4);
+	      tmp=rdata_payload;
         cnt=send_to_client(clientFd,(unsigned char *) &tmp, 4);
-        printf("rdata %d, size %d \n",cnt,size);
-	tmp=rsp;
+	      tmp=rsp;
         cnt=send_to_client(clientFd,(unsigned char *) &tmp, 1);
-        printf("sent rsp %d \n",cnt);
-	state=RECEIVE_CMD;
-        printf("read responsesent \n");
+	      state=RECEIVE_CMD;
         return 1;
       }
     }
