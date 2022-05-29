@@ -5,7 +5,7 @@
 #include "../../includes/tcp_functions.h"
 #include "svdpi.h"
 #include <unistd.h> // read, write, close
-
+#include <errno.h>
 //#include "vpi_user.h"
 
 enum STATE
@@ -16,6 +16,26 @@ enum STATE
   DRIVE_AXI,
   SEND_RESP
 };
+int saferead(int fd, const void *p, size_t want) {
+  int ret;
+
+   errno = 0;
+   while (want) {
+      ret = read(fd, (uint8_t*)p, want);
+      if( ret == 0 )
+         return -1;  /* EOF */
+      if (ret <= 0) {
+         if( errno != EINTR && errno != EAGAIN ) {
+            return -1;
+         }
+         errno = 0;
+         continue;
+      }
+      want -= ret;
+      p = (uint8_t*) p + ret;
+   }
+   return 0;
+}
 extern int axi_server(int *write,
                       int *addr,
                       int *wdata_valid,
@@ -33,7 +53,7 @@ extern int axi_server(int *write,
   static enum STATE state = OPEN_PORT;
   static int clientFd, serverFd; // client and server file descriptor
  static struct sockaddr_in server, client;
-	printf("state %d \n", state);
+//	printf("state %d \n", state);
   if (state == OPEN_PORT)
   {
     create_socket(&serverFd);
@@ -54,10 +74,12 @@ extern int axi_server(int *write,
   if (state == RECEIVE_CMD)
   {
     printf("RECEIVE_CMD \n");
-    if(!read(clientFd, &size, sizeof(size)))return 1;
-    read(clientFd, &flags, sizeof(flags));
-    read(clientFd, buffer, size);
-    read(clientFd, &address, sizeof(address));
+    saferead(clientFd, &size, sizeof(size));
+    saferead(clientFd, &flags, sizeof(flags));
+    if(flags & 1)saferead(clientFd, buffer, size);
+    saferead(clientFd,&mask,4);
+    saferead(clientFd, &address, sizeof(address));
+    printf("size %08X, flags %08X, wdata %08X, mask %08X, addr %08X  \n",size,flags,((int *)buffer)[0],mask, address);
     state = DRIVE_AXI;
   }
 
@@ -68,18 +90,20 @@ extern int axi_server(int *write,
     if (flags & 1)
     {
       *write = 1;
+      printf("write %d \n",*write);
       *wdata_valid = 1;
       *wdata_payload = ((unsigned int *)buffer)[0];
     }
     else
     {
+      *write=0;
       *rdata_ready = 1;
     }
     state = SEND_RESP;
   }
   if (state == SEND_RESP)
   {
-    printf("SEND_RESP\n");
+    //printf("SEND_RESP\n");
 
     if (flags & 1)
     {
@@ -108,12 +132,16 @@ extern int axi_server(int *write,
       else
       {
         unsigned int tmp=0x55667788;
-        send_to_client(clientFd,(unsigned char *) &tmp, 4);
-        tmp=rdata_payload;
-        send_to_client(clientFd,(unsigned char *) &tmp, size);
-        tmp=rsp;
-        send_to_client(clientFd,(unsigned char *) &tmp, 1);
-        state=RECEIVE_CMD;
+        int cnt=0;
+	cnt=send_to_client(clientFd,(unsigned char *) &tmp, 4);
+        printf("sent dummy %d \n",cnt);
+	tmp=rdata_payload;
+        cnt=send_to_client(clientFd,(unsigned char *) &tmp, 4);
+        printf("rdata %d, size %d \n",cnt,size);
+	tmp=rsp;
+        cnt=send_to_client(clientFd,(unsigned char *) &tmp, 1);
+        printf("sent rsp %d \n",cnt);
+	state=RECEIVE_CMD;
         printf("read responsesent \n");
         return 1;
       }

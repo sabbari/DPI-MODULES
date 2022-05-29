@@ -350,7 +350,7 @@ int value ;
 always @(posedge clk)
 begin
 
-	axi_server(write,addr,wdata_valid,rdata_ready,wdata_payload,rsp,rdata_payload,rdata_valid,1,port,blocking);    	
+	axi_server(wdata_valid,addr,wdata_valid,rdata_ready,wdata_payload,rsp,rdata_payload,rdata_valid,1,port,blocking);    	
 end
 
  simpleAxi4Master aximaster(
@@ -379,7 +379,7 @@ end
   .masterAxi_r_payload_data(masterAxi_r_payload_data),
   .masterAxi_r_payload_resp(masterAxi_r_payload_resp),
   .masterAxi_r_payload_last(masterAxi_r_payload_last),
-  .tcpBus_write(write),
+  .tcpBus_write(wdata_valid),
   .tcpBus_addr(addr),
   .tcpBus_wdata_valid(wdata_valid),
   .tcpBus_wdata_ready(wdata_ready),

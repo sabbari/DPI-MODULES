@@ -23,7 +23,7 @@ module unamed (
   output              io_axi_r_valid,
   input               io_axi_r_ready,
   output     [31:0]   io_axi_r_payload_data,
-  output reg [1:0]    io_axi_r_payload_resp,
+  output     [1:0]    io_axi_r_payload_resp,
   output              io_axi_r_payload_last,
   input               clk,
   input               reset
@@ -142,7 +142,7 @@ module unamed (
   reg        [2:0]    unburstify_result_rData_fragment_size;
   reg        [1:0]    unburstify_result_rData_fragment_burst;
   wire                when_Stream_l368_1;
-  wire       [31:0]   io_mapper_readRsp_data;
+  reg        [31:0]   io_mapper_readRsp_data;
   wire       [1:0]    io_mapper_readRsp_resp;
   wire                io_mapper_readRsp_last;
   wire                _zz_io_axi_r_valid;
@@ -151,7 +151,7 @@ module unamed (
   wire       [31:0]   io_mapper_readAddressMasked;
   wire       [31:0]   io_mapper_writeAddressMasked;
   reg        [31:0]   io_reg;
-  reg        [31:0]   _zz_io_reg;
+  reg        [31:0]   io_reg_driver;
   wire                when_BusSlaveFactory_l962;
   wire                when_BusSlaveFactory_l962_1;
   wire                when_BusSlaveFactory_l962_2;
@@ -448,21 +448,21 @@ module unamed (
   assign io_mapper_readDataStage_ready = (io_axi_r_ready && _zz_io_axi_r_valid);
   assign io_axi_r_valid = (io_mapper_readDataStage_valid && _zz_io_axi_r_valid);
   assign io_axi_r_payload_data = io_mapper_readRsp_data;
+  assign io_axi_r_payload_resp = io_mapper_readRsp_resp;
+  assign io_axi_r_payload_last = io_mapper_readRsp_last;
+  assign io_mapper_writeRsp_payload_resp = 2'b00;
+  assign io_mapper_readRsp_resp = 2'b00;
   always @(*) begin
-    io_axi_r_payload_resp = io_mapper_readRsp_resp;
+    io_mapper_readRsp_data = 32'h0;
     case(io_mapper_readAddressMasked)
       32'h0 : begin
-        io_axi_r_payload_resp = 2'b10;
+        io_mapper_readRsp_data[31 : 0] = io_reg_driver;
       end
       default : begin
       end
     endcase
   end
 
-  assign io_axi_r_payload_last = io_mapper_readRsp_last;
-  assign io_mapper_writeRsp_payload_resp = 2'b00;
-  assign io_mapper_readRsp_resp = 2'b00;
-  assign io_mapper_readRsp_data = 32'h0;
   assign io_mapper_readRsp_last = io_mapper_readDataStage_payload_last;
   assign io_mapper_writeOccur = (io_mapper_writeJoinEvent_valid && io_mapper_writeJoinEvent_ready);
   assign io_mapper_readOccur = (io_axi_r_valid && io_axi_r_ready);
@@ -552,21 +552,21 @@ module unamed (
       unburstify_result_rData_fragment_size <= unburstify_result_payload_fragment_size_1;
       unburstify_result_rData_fragment_burst <= unburstify_result_payload_fragment_burst_1;
     end
-    io_reg <= _zz_io_reg;
+    io_reg <= io_reg_driver;
     case(io_mapper_writeAddressMasked)
       32'h0 : begin
         if(io_mapper_writeOccur) begin
           if(when_BusSlaveFactory_l962) begin
-            _zz_io_reg[7 : 0] <= io_axi_w_payload_data[7 : 0];
+            io_reg_driver[7 : 0] <= io_axi_w_payload_data[7 : 0];
           end
           if(when_BusSlaveFactory_l962_1) begin
-            _zz_io_reg[15 : 8] <= io_axi_w_payload_data[15 : 8];
+            io_reg_driver[15 : 8] <= io_axi_w_payload_data[15 : 8];
           end
           if(when_BusSlaveFactory_l962_2) begin
-            _zz_io_reg[23 : 16] <= io_axi_w_payload_data[23 : 16];
+            io_reg_driver[23 : 16] <= io_axi_w_payload_data[23 : 16];
           end
           if(when_BusSlaveFactory_l962_3) begin
-            _zz_io_reg[31 : 24] <= io_axi_w_payload_data[31 : 24];
+            io_reg_driver[31 : 24] <= io_axi_w_payload_data[31 : 24];
           end
         end
       end
@@ -577,6 +577,8 @@ module unamed (
 
 
 endmodule
+
+
 
 module testbench ;
 
@@ -664,7 +666,7 @@ wire                ram_io_axi_ar_ready;
     .masterAxi_r_payload_data   (ram_io_axi_r_payload_data[31:0]          ), //i
     .masterAxi_r_payload_resp   (ram_io_axi_r_payload_resp[1:0]           ), //i
     .masterAxi_r_payload_last   (ram_io_axi_r_payload_last                ), //i
-    .clk                        (clk2                                      ), //i
+    .clk                        (clk                                      ), //i
     .reset                      (reset                                    )  //i
   );
 
@@ -673,21 +675,25 @@ initial
 begin 
 	$vcdpluson();
     $vcdplusmemon();
-    
+    $display("hiii");
     #10;
-    reset = 0;
-    #1000;
-    reset = 1;
-    testbench.axi_dpi.aximaster.tcpBus_wdata_ready=0;
-	
-    #(10*100);
-	reset = 0;
-
+    reset =1'b0;
+    $display("reset 0");
+    #10;
+    reset =1'b1;
+    $display("reset1");
+    #(10);
+    reset = 1'b0;
     #(100*100);
-    $finish();
+    //$finish();
+   clk=0;
+   forever begin 
+   	#5 clk=~clk;
+   end
 end
-
+/*
 always 
+
 begin
 
     clk = 1'b1; 
@@ -706,7 +712,6 @@ begin
 end
 
 
-
-
+*/
 
 endmodule
