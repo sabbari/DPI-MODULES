@@ -176,8 +176,7 @@ extern int axi_server(
   if (state == SEND_READ_RESP)
   {
         unsigned int tmp=0x55667788;
-	      send_to_client(clientFd,(unsigned char *) &tmp, 4);
-	      
+	      send_to_client(clientFd,(unsigned char *) &tmp, 4);   
         send_to_client(clientFd,read_buffer, rxBuffer[size_idx]);
         send_to_client(clientFd,(unsigned char *) &read_resp, 1);
 	      state=RECEIVE_CMD;
