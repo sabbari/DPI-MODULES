@@ -14,8 +14,11 @@ enum STATE
   OPEN_PORT=0,
   WAIT_CLIENT,
   RECEIVE_CMD,
-  DRIVE_AXI,
-  SEND_RESP
+  DRIVE_WRITE_AXI,
+  DRIVE_READ_AXI,
+  RECEIVE_READ_DATA,
+  SEND_WRITE_RESP,
+  SEND_READ_RESP
 };
 int saferead(int fd, const void *p, size_t want) {
   int ret;
@@ -37,24 +40,55 @@ int saferead(int fd, const void *p, size_t want) {
    }
    return 0;
 }
-extern int axi_server(int *write,
+extern int axi_server(
                       int *addr,
+                      int *size,
                       int *wdata_valid,
-                      int *rdata_ready,
-                      int *wdata_payload,
-                      const unsigned int rsp,
-                      const unsigned int rdata_payload, const unsigned int rdata_valid,
                       const unsigned int wdata_ready,
+                      int *wdata_payload0,
+                      int *wdata_payload1,
+                      int *wdata_payload2,
+                      int *wdata_payload3,
+                      int *wdata_last,
+                      int *rdata_ready,
+                      const unsigned int rdata_payload0,
+                      const unsigned int rdata_payload1,
+                      const unsigned int rdata_payload2,
+                      const unsigned int rdata_payload3,
+                      const unsigned int rdata_valid,
+                      const unsigned int rdata_last,
+                      const unsigned int rsp_payload,
+                      const unsigned int rsp_valid,                      
                       int port, int blocking)
 {
 
-	static unsigned char buffer[32], tobesent_buffer[32];
-  static unsigned int size, flags, mask, address;
-
+	static unsigned char buffer[256], tobesent_buffer[32];
+  static unsigned int write_data_count=0,read_data_count=0;
   static enum STATE state = OPEN_PORT;
   static int clientFd, serverFd; // client and server file descriptor
   static struct sockaddr_in server, client;
   int available_bytes=0;
+
+  enum { size_size = 4};
+  enum { data_size = 256*128/8 };//AXI4 supports up to 256 transfers. we support word of up to 128bits.
+  enum { mask_size = 4};
+  enum { addr_size = 4};
+  enum { flags_size = 4};
+  enum { buffer_size = data_size + mask_size + addr_size + flags_size + size_size};
+   uint32_t rxBuffer[buffer_size / sizeof(uint32_t)] = {0};
+    uint32_t actual_size = mask_size + addr_size + flags_size + size_size;
+    uint32_t size_idx = 0;
+    uint32_t flags_idx = size_idx + (size_size / sizeof(uint32_t));
+    uint32_t data_idx = flags_idx + (flags_size / sizeof(uint32_t));
+    uint32_t mask_idx = data_idx + (data_size / sizeof(uint32_t));
+    uint32_t addr_idx = mask_idx + (mask_size / sizeof(uint32_t));
+
+  	static unsigned char read_buffer[256*128/8],read_resp;
+
+
+    *addr = rxBuffer[addr_idx];
+    *size =rxBuffer[size_idx];
+
 //	printf("state %d \n", state);
   if (state == OPEN_PORT)
   {
@@ -78,71 +112,78 @@ extern int axi_server(int *write,
     ioctl(clientFd, FIONREAD, &available_bytes);
     if(available_bytes<=0)return 1;
     printf("RECEIVE_CMD \n");
-    saferead(clientFd, &size, sizeof(size));
-    saferead(clientFd, &flags, sizeof(flags));
-    if(flags & 1)saferead(clientFd, buffer, size);
-    saferead(clientFd,&mask,4);
-    saferead(clientFd, &address, sizeof(address));
-    printf("size %08X, flags %08X, wdata %08X, mask %08X, addr %08X  \n",size,flags,((int *)buffer)[0],mask, address);
-    state = DRIVE_AXI;
+    saferead(clientFd, rxBuffer+size_idx, size_size);
+    saferead(clientFd, rxBuffer+flags_idx, flags_size);
+    if(rxBuffer[flags_idx] & 1)saferead(clientFd, rxBuffer+data_idx, rxBuffer[size_idx]);
+    saferead(clientFd,rxBuffer+mask_idx,mask_size);
+    saferead(clientFd, rxBuffer+addr_idx, addr_size);
+    // printf("size %08X, flags %08X, wdata %08X, mask %08X, addr %08X  \n",size,flags,((int *)buffer)[0],mask, address);
+    write_data_count=0;
+    state = (rxBuffer[flags_idx] & 1)? DRIVE_WRITE_AXI:DRIVE_READ_AXI;
   }
 
-  if (state == DRIVE_AXI)
+  if (state == DRIVE_WRITE_AXI)
   {
-    printf("DRIVE_AXI \n");
-    *addr = address;
-    if (flags & 1)
-    {
-      *write = 1;
-      printf("write %d \n",*write);
+      printf("DRIVE_WRITE_AXI \n");
+      if(wdata_ready != 1)return 1;
+
       *wdata_valid = 1;
-      *wdata_payload = ((unsigned int *)buffer)[0];
-    }
-    else
-    {
-      *write=0;
-      *rdata_ready = 1;
-    }
-    state = SEND_RESP;
+      *wdata_payload0=rxBuffer[data_idx+write_data_count+0];
+      *wdata_payload1=rxBuffer[data_idx+write_data_count+1];
+      *wdata_payload2=rxBuffer[data_idx+write_data_count+2];
+      *wdata_payload3=rxBuffer[data_idx+write_data_count+3];
+      *wdata_last=(write_data_count==(rxBuffer[size_idx]-4))?1:0;
+      state== (write_data_count==(rxBuffer[size_idx]-4))?SEND_WRITE_RESP:DRIVE_WRITE_AXI;
+      write_data_count+=4;
+      return 1;
+    
   }
-  if (state == SEND_RESP)
+  if(state==DRIVE_READ_AXI){
+      *rdata_ready=1;
+      state==RECEIVE_READ_DATA;
+      read_data_count=0;
+      return 1;
+
+
+  }
+  if(state==RECEIVE_READ_DATA){
+    if(!rdata_valid)return 1 ;
+    read_buffer[read_data_count+0]=rdata_payload0;
+    read_buffer[read_data_count+1]=rdata_payload1;
+    read_buffer[read_data_count+2]=rdata_payload2;
+    read_buffer[read_data_count+3]=rdata_payload3;
+    read_resp=rsp_payload;
+    if(rdata_last)state=SEND_READ_RESP;
+    read_data_count+=4;
+    return 1;
+
+  }
+  if(state==SEND_WRITE_RESP){
+      if(rsp_valid != 1) return 1;
+      unsigned int tmp=0x11223344;
+      send_to_client(clientFd,(unsigned char *) &tmp, 4);
+      tmp=0;
+      for (int i=0; i<rxBuffer[size_idx];i++) send_to_client(clientFd,(unsigned char *)&tmp, 1);
+      tmp=rsp_payload;
+      send_to_client(clientFd,(unsigned char *) &tmp, 1);
+      state=RECEIVE_CMD;
+      return 1;
+
+  }
+
+
+
+  if (state == SEND_READ_RESP)
   {
-    if (flags & 1)
-    {
-      if (!wdata_ready)
-      {
-        return 1;
-      }
-      else
-      {
-        unsigned int tmp=0x11223344;
-        send_to_client(clientFd,(unsigned char *) &tmp, 4);
-        tmp=0;
-        send_to_client(clientFd,(unsigned char *) &tmp, size);
-        tmp=rsp;
-        send_to_client(clientFd,(unsigned char *) &tmp, 1);
-        state=RECEIVE_CMD;
-        return 1;
-      }
-    }
-    else {
-      if(!rdata_valid)
-      {
-        return 1;
-      }
-      else
-      {
         unsigned int tmp=0x55667788;
-        int cnt=0;
-	      cnt=send_to_client(clientFd,(unsigned char *) &tmp, 4);
-	      tmp=rdata_payload;
-        cnt=send_to_client(clientFd,(unsigned char *) &tmp, 4);
-	      tmp=rsp;
-        cnt=send_to_client(clientFd,(unsigned char *) &tmp, 1);
+	      send_to_client(clientFd,(unsigned char *) &tmp, 4);
+	      
+        send_to_client(clientFd,read_buffer, rxBuffer[size_idx]);
+        send_to_client(clientFd,(unsigned char *) &read_resp, 1);
 	      state=RECEIVE_CMD;
         return 1;
-      }
+      
     }
-  }
+  
   return 0;
 }
