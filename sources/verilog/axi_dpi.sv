@@ -1,11 +1,5 @@
 // Generator : SpinalHDL v1.7.0    git head : b5ec4f6b85d7bd885d26b95dac2eabcc2eb9b0a1
 // Component : simpleAxi4Master
-// Git hash  : 049906b582a3362bbdb3b1e2702093c42e8c0ef7
-
-`timescale 1ns/1ps
-
-// Generator : SpinalHDL v1.7.0    git head : b5ec4f6b85d7bd885d26b95dac2eabcc2eb9b0a1
-// Component : simpleAxi4Master
 // Git hash  : 938e8626bb4d31489391a7a80b5e571ffaf08c66
 
 `timescale 1ns/1ps
@@ -70,7 +64,7 @@ module simpleAxi4Master (
   wire       [7:0]    _zz_driveAxiFsm_indexTobeSent;
   reg        [127:0]  _zz_masterAxi_w_payload_data;
   wire       [3:0]    _zz_masterAxi_w_payload_data_1;
-  wire       [7:0]    _zz_when_simpleAxi4Master_l212;
+  wire       [7:0]    _zz_when_simpleAxi4Master_l213;
   wire       [7:0]    nwords;
   reg        [127:0]  buffer_0;
   reg        [127:0]  buffer_1;
@@ -119,14 +113,14 @@ module simpleAxi4Master (
   reg        [3:0]    driveAxiFsm_stateReg;
   reg        [3:0]    driveAxiFsm_stateNext;
   wire                masterAxi_r_fire;
-  wire                when_simpleAxi4Master_l198;
+  wire                when_simpleAxi4Master_l199;
   wire                masterAxi_r_fire_1;
-  wire                when_simpleAxi4Master_l212;
+  wire                when_simpleAxi4Master_l213;
   wire                masterAxi_aw_fire;
-  wire                when_simpleAxi4Master_l236;
-  wire                when_simpleAxi4Master_l247;
+  wire                when_simpleAxi4Master_l237;
+  wire                when_simpleAxi4Master_l248;
   wire                masterAxi_w_fire;
-  wire                when_simpleAxi4Master_l251;
+  wire                when_simpleAxi4Master_l252;
   wire                masterAxi_w_fire_1;
   wire                masterAxi_b_fire;
   `ifndef SYNTHESIS
@@ -141,7 +135,7 @@ module simpleAxi4Master (
   assign _zz_driveAxiFsm_readCount_valueNext = {7'd0, _zz_driveAxiFsm_readCount_valueNext_1};
   assign _zz_driveAxiFsm_indexTobeSent = {4'd0, receivedCnt_value};
   assign _zz_masterAxi_w_payload_data_1 = driveAxiFsm_indexTobeSent[3:0];
-  assign _zz_when_simpleAxi4Master_l212 = (tcpBus_size - 8'h01);
+  assign _zz_when_simpleAxi4Master_l213 = (tcpBus_size - 8'h01);
   always @(*) begin
     case(_zz_masterAxi_w_payload_data_1)
       4'b0000 : _zz_masterAxi_w_payload_data = buffer_0;
@@ -231,7 +225,7 @@ module simpleAxi4Master (
         masterAxi_w_valid = 1'b1;
       end
       driveAxiFsm_enumDef_Write : begin
-        if(when_simpleAxi4Master_l247) begin
+        if(when_simpleAxi4Master_l248) begin
           masterAxi_w_valid = 1'b1;
         end
       end
@@ -259,7 +253,7 @@ module simpleAxi4Master (
       end
       driveAxiFsm_enumDef_Awrite : begin
         if(masterAxi_aw_fire) begin
-          if(when_simpleAxi4Master_l236) begin
+          if(when_simpleAxi4Master_l237) begin
             masterAxi_w_payload_last = 1'b1;
           end
         end
@@ -462,7 +456,7 @@ module simpleAxi4Master (
         end
       end
       driveAxiFsm_enumDef_Write : begin
-        if(when_simpleAxi4Master_l247) begin
+        if(when_simpleAxi4Master_l248) begin
           if(masterAxi_w_fire) begin
             receivedCnt_decrementIt = 1'b1;
           end
@@ -548,7 +542,7 @@ module simpleAxi4Master (
       end
       driveAxiFsm_enumDef_Aread : begin
         if(masterAxi_r_fire) begin
-          if(!when_simpleAxi4Master_l198) begin
+          if(!when_simpleAxi4Master_l199) begin
             driveAxiFsm_readCount_willIncrement = 1'b1;
           end
         end
@@ -632,7 +626,7 @@ module simpleAxi4Master (
       end
       driveAxiFsm_enumDef_Aread : begin
         if(masterAxi_r_fire) begin
-          if(when_simpleAxi4Master_l198) begin
+          if(when_simpleAxi4Master_l199) begin
             driveAxiFsm_stateNext = driveAxiFsm_enumDef_endRead;
           end else begin
             driveAxiFsm_stateNext = driveAxiFsm_enumDef_Read;
@@ -641,7 +635,7 @@ module simpleAxi4Master (
       end
       driveAxiFsm_enumDef_Read : begin
         if(masterAxi_r_fire_1) begin
-          if(when_simpleAxi4Master_l212) begin
+          if(when_simpleAxi4Master_l213) begin
             driveAxiFsm_stateNext = driveAxiFsm_enumDef_endRead;
           end else begin
             driveAxiFsm_stateNext = driveAxiFsm_enumDef_Read;
@@ -655,7 +649,7 @@ module simpleAxi4Master (
       end
       driveAxiFsm_enumDef_Awrite : begin
         if(masterAxi_aw_fire) begin
-          if(when_simpleAxi4Master_l236) begin
+          if(when_simpleAxi4Master_l237) begin
             driveAxiFsm_stateNext = driveAxiFsm_enumDef_WriteResp;
           end else begin
             driveAxiFsm_stateNext = driveAxiFsm_enumDef_Write;
@@ -663,9 +657,9 @@ module simpleAxi4Master (
         end
       end
       driveAxiFsm_enumDef_Write : begin
-        if(when_simpleAxi4Master_l247) begin
+        if(when_simpleAxi4Master_l248) begin
           if(masterAxi_w_fire) begin
-            if(when_simpleAxi4Master_l251) begin
+            if(when_simpleAxi4Master_l252) begin
               driveAxiFsm_stateNext = driveAxiFsm_enumDef_WriteResp;
             end else begin
               driveAxiFsm_stateNext = driveAxiFsm_enumDef_Write;
@@ -695,14 +689,14 @@ module simpleAxi4Master (
   end
 
   assign masterAxi_r_fire = (masterAxi_r_valid && masterAxi_r_ready);
-  assign when_simpleAxi4Master_l198 = (tcpBus_size == 8'h01);
+  assign when_simpleAxi4Master_l199 = (tcpBus_size == 8'h01);
   assign masterAxi_r_fire_1 = (masterAxi_r_valid && masterAxi_r_ready);
-  assign when_simpleAxi4Master_l212 = (driveAxiFsm_readCount_value == _zz_when_simpleAxi4Master_l212);
+  assign when_simpleAxi4Master_l213 = (driveAxiFsm_readCount_value == _zz_when_simpleAxi4Master_l213);
   assign masterAxi_aw_fire = (masterAxi_aw_valid && masterAxi_aw_ready);
-  assign when_simpleAxi4Master_l236 = (receivedCnt_value == 4'b0001);
-  assign when_simpleAxi4Master_l247 = (4'b0000 <= receivedCnt_value);
+  assign when_simpleAxi4Master_l237 = (receivedCnt_value == 4'b0001);
+  assign when_simpleAxi4Master_l248 = (4'b0000 <= receivedCnt_value);
   assign masterAxi_w_fire = (masterAxi_w_valid && masterAxi_w_ready);
-  assign when_simpleAxi4Master_l251 = (receivedCnt_value == 4'b0001);
+  assign when_simpleAxi4Master_l252 = (receivedCnt_value == 4'b0001);
   assign masterAxi_w_fire_1 = (masterAxi_w_valid && masterAxi_w_ready);
   assign masterAxi_b_fire = (masterAxi_b_valid && masterAxi_b_ready);
   always @(posedge clk or posedge reset) begin
@@ -735,11 +729,9 @@ module simpleAxi4Master (
       receiveDataFsm_stateReg <= receiveDataFsm_stateNext;
       case(receiveDataFsm_stateReg)
         receiveDataFsm_enumDef_idle : begin
-          if(when_simpleAxi4Master_l146) begin
-            PendingWrite <= 1'b1;
-          end
         end
         receiveDataFsm_enumDef_receive : begin
+          PendingWrite <= 1'b1;
           if(_zz_1[0]) begin
             buffer_0 <= tcpBus_wdata_payload_fragment;
           end
@@ -829,7 +821,13 @@ endmodule
 
 
 
+
+
+
+
 module axi_dpi(
+  input               clk,
+  input               reset,
   output reg          masterAxi_aw_valid,
   input               masterAxi_aw_ready,
   output     [31:0]   masterAxi_aw_payload_addr,
@@ -854,7 +852,7 @@ module axi_dpi(
   output reg          masterAxi_r_ready,
   input      [127:0]  masterAxi_r_payload_data,
   input      [1:0]    masterAxi_r_payload_resp,
-  input               masterAxi_r_payload_last,
+  input               masterAxi_r_payload_last
 );
 
 
@@ -863,15 +861,15 @@ module axi_dpi(
 
 
 import "DPI-C" context function int axi_server(
-                      output int size,
                       output int addr,
+                      output int size,
                       output bit wdata_valid,
-                      output bit wdata_last,
+                      input  bit wdata_ready,
                       output int wdata_payload0,
                       output int wdata_payload1,
                       output int wdata_payload2,
                       output int wdata_payload3,
-                      input bit  wdata_ready,
+                      output bit  wdata_last,
                       output bit rdata_ready,
                       input int rdata_payload0,
                       input int rdata_payload1,
@@ -879,8 +877,8 @@ import "DPI-C" context function int axi_server(
                       input int rdata_payload3,
                       input bit rdata_valid,
                       input bit rdata_last,
-                      input int rsp_valid,
                       input int rsp_payload,
+                      input int rsp_valid,
                       input int port,
                       input int blocking
 );
@@ -901,10 +899,10 @@ int value ;
 always @(posedge clk)
 begin
 
-	axi_server(size,
-            addr,
+	axi_server(addr,
+            size,
             wdata_valid,
-            wdata_last,
+            wdata_ready,
             wdata_payload0,
             wdata_payload1,
             wdata_payload2,
@@ -917,8 +915,8 @@ begin
             rdata_payload3,
             rdata_valid,
             rdata_last,
-            rsp_valid,
             rsp_payload,
+            rsp_valid,
             port,
             blocking);    	
 end
@@ -956,7 +954,7 @@ end
   .tcpBus_wdata_payload_fragment ({wdata_payload3,wdata_payload2,wdata_payload1,wdata_payload0}), //i
   .tcpBus_size                   (size), //i
   .tcpBus_rdata_valid            (rdata_valid), //o
-  .tcpBus_rdata_ready            (data_ready), //i
+  .tcpBus_rdata_ready            (rdata_ready), //i
   .tcpBus_rdata_payload_last     (rdata_last), //o
   .tcpBus_rdata_payload_fragment ({rdata_payload3,rdata_payload2,rdata_payload1,rdata_payload0}), //o
   .tcpBus_rsp_valid              (rsp_valid), //o

@@ -40,7 +40,7 @@ wire                 ram_io_axi_ar_ready;
     .io_axi_aw_payload_burst (aximaster_masterAxi_aw_payload_burst[1:0]), //i
     .io_axi_w_valid          (aximaster_masterAxi_w_valid              ), //i
     .io_axi_w_ready          (ram_io_axi_w_ready                       ), //o
-    .io_axi_w_payload_data   (aximaster_masterAxi_w_payload_data[31:0] ), //i
+    .io_axi_w_payload_data   (aximaster_masterAxi_w_payload_data ), //i
     .io_axi_w_payload_strb   (aximaster_masterAxi_w_payload_strb[3:0]  ), //i
     .io_axi_w_payload_last   (aximaster_masterAxi_w_payload_last       ), //i
     .io_axi_b_valid          (ram_io_axi_b_valid                       ), //o
@@ -54,7 +54,7 @@ wire                 ram_io_axi_ar_ready;
     .io_axi_ar_payload_burst (aximaster_masterAxi_ar_payload_burst[1:0]), //i
     .io_axi_r_valid          (ram_io_axi_r_valid                       ), //o
     .io_axi_r_ready          (aximaster_masterAxi_r_ready              ), //i
-    .io_axi_r_payload_data   (ram_io_axi_r_payload_data[31:0]          ), //o
+    .io_axi_r_payload_data   (ram_io_axi_r_payload_data         ), //o
     .io_axi_r_payload_resp   (ram_io_axi_r_payload_resp[1:0]           ), //o
     .io_axi_r_payload_last   (ram_io_axi_r_payload_last                ), //o
     .clk                     (clk                                      ), //i
