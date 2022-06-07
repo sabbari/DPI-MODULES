@@ -59,11 +59,13 @@ extern int axi_server(
                       const unsigned int rdata_last,
                       const unsigned int rsp_payload,
                       const unsigned int rsp_valid,                      
-                      int port, int blocking)
+                      int port, int blocking,
+                      int *datacount)
 {
 
 	static unsigned char buffer[256], tobesent_buffer[32];
   static unsigned int write_data_count=0,read_data_count=0;
+  *datacount=write_data_count;
   static enum STATE state = OPEN_PORT;
   static int clientFd, serverFd; // client and server file descriptor
   static struct sockaddr_in server, client;
@@ -133,12 +135,12 @@ extern int axi_server(
   { 
      
       printf("DRIVE_WRITE_AXI, write_data_count=%d,rxBuffer[size_idx]= %d, wdata_ready=%d, size %d \n",write_data_count,rxBuffer[size_idx],wdata_ready&1,*size);
-      
+      write_data_count=(wdata_ready&1)? write_data_count+1:write_data_count;
       *wdata_payload0=rxBuffer[data_idx+write_data_count*4+0];
       *wdata_payload1=rxBuffer[data_idx+write_data_count*4+1];
       *wdata_payload2=rxBuffer[data_idx+write_data_count*4+2];
       *wdata_payload3=rxBuffer[data_idx+write_data_count*4+3];
-      write_data_count=(wdata_ready&1)? write_data_count+1:write_data_count;
+      // write_data_count=(wdata_ready&1)? write_data_count+1:write_data_count;
       state= ((write_data_count*4*4)==(rxBuffer[size_idx]))?SEND_WRITE_RESP:DRIVE_WRITE_AXI;
       *wdata_last=(((write_data_count+1)*4*4)==(rxBuffer[size_idx]))?1:0;
       *wdata_valid= 1;
@@ -157,8 +159,8 @@ extern int axi_server(
   if(state==RECEIVE_READ_DATA){
 
     if(!rdata_valid)return 1 ;
-    printf("receive read data, %d , 0=%08X, 1=%08X, 2=%08X, 3=%08X \n",read_data_count,rdata_payload0,rdata_payload1,
-    rdata_payload2,rdata_payload3);
+   // printf("receive read data, %d , 0=%08X, 1=%08X, 2=%08X, 3=%08X \n",read_data_count,rdata_payload0,rdata_payload1,
+  //  rdata_payload2,rdata_payload3);
     *rdata_ready=0;
     read_buffer[read_data_count+0]=rdata_payload0;
     read_buffer[read_data_count+1]=rdata_payload1;
@@ -191,11 +193,12 @@ extern int axi_server(
   if (state == SEND_READ_RESP)
   {
         printf("read_data_count %d\n",read_data_count);
+        for (int i=0;i<256/4;i++)printf("data to be sent : %08X\n",read_buffer[i]);
         unsigned int tmp=0x55667788;
 	      send_to_client(clientFd,(unsigned char *) &tmp, 4);   
         send_to_client(clientFd,(unsigned char *) read_buffer, rxBuffer[size_idx]);
         send_to_client(clientFd,(unsigned char *) &read_resp, 1);
-	      state=<<<<<<<<<<<<RECEIVE_CMD>>>>>>>>>>>>;
+	      state=RECEIVE_CMD;
         return 1;
       
     }
