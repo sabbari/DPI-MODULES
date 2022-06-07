@@ -83,7 +83,7 @@ extern int axi_server(
     uint32_t mask_idx = data_idx + (data_size / sizeof(uint32_t));
     uint32_t addr_idx = mask_idx + (mask_size / sizeof(uint32_t));
 
-  	static unsigned char read_buffer[256*128/8],read_resp;
+  	static unsigned int read_buffer[256*128/(32)]={0},read_resp;
 
 
     *addr = rxBuffer[addr_idx];
@@ -115,10 +115,15 @@ extern int axi_server(
     printf("RECEIVE_CMD \n");
     saferead(clientFd, rxBuffer+size_idx, size_size);
     saferead(clientFd, rxBuffer+flags_idx, flags_size);
-    if(rxBuffer[flags_idx] & 1)saferead(clientFd, rxBuffer+data_idx, rxBuffer[size_idx]);
+    if(rxBuffer[flags_idx] & 1){
+      printf("receiveing data \n");
+      saferead(clientFd, rxBuffer+data_idx, rxBuffer[size_idx]);
+      printf("first received data %08X \n",rxBuffer[data_idx]);
+      }
     saferead(clientFd,rxBuffer+mask_idx,mask_size);
     saferead(clientFd, rxBuffer+addr_idx, addr_size);
-    // printf("size %08X, flags %08X, wdata %08X, mask %08X, addr %08X  \n",size,flags,((int *)buffer)[0],mask, address);
+    printf("size %08X, flags %08X, wdata0 %08X, mask %08X, addr %08X  \n",rxBuffer[size_idx],rxBuffer[flags_idx],rxBuffer[data_idx],
+    rxBuffer[mask_idx],rxBuffer[addr_idx]);
     write_data_count=0;
     state = (rxBuffer[flags_idx] & 1)? DRIVE_WRITE_AXI:DRIVE_READ_AXI;
     return  1; 
@@ -141,7 +146,7 @@ extern int axi_server(
     
   }
   if(state==DRIVE_READ_AXI){
-    printf("DRIVE_READ_AXI \n ");
+    printf("DRIVE_READ_AXI \n");
       *rdata_ready=1;
       state=RECEIVE_READ_DATA;
       read_data_count=0;
@@ -150,9 +155,11 @@ extern int axi_server(
 
   }
   if(state==RECEIVE_READ_DATA){
-    printf("RECEIVE_READ_DATA \n ");
 
     if(!rdata_valid)return 1 ;
+    printf("receive read data, %d , 0=%08X, 1=%08X, 2=%08X, 3=%08X \n",read_data_count,rdata_payload0,rdata_payload1,
+    rdata_payload2,rdata_payload3);
+    *rdata_ready=0;
     read_buffer[read_data_count+0]=rdata_payload0;
     read_buffer[read_data_count+1]=rdata_payload1;
     read_buffer[read_data_count+2]=rdata_payload2;
@@ -164,7 +171,6 @@ extern int axi_server(
 
   }
   if(state==SEND_WRITE_RESP){
-  //  printf("SEND WRITE RESP \n ");
       *wdata_last=0;
       *wdata_valid=0;
       if(rsp_valid != 1) return 1;
@@ -175,6 +181,7 @@ extern int axi_server(
       tmp=rsp_payload;
       send_to_client(clientFd,(unsigned char *) &tmp, 1);
       state=RECEIVE_CMD;
+      printf("sent write resp \n");
       return 1;
 
   }
@@ -183,11 +190,12 @@ extern int axi_server(
 
   if (state == SEND_READ_RESP)
   {
+        printf("read_data_count %d\n",read_data_count);
         unsigned int tmp=0x55667788;
 	      send_to_client(clientFd,(unsigned char *) &tmp, 4);   
-        send_to_client(clientFd,read_buffer, rxBuffer[size_idx]);
+        send_to_client(clientFd,(unsigned char *) read_buffer, rxBuffer[size_idx]);
         send_to_client(clientFd,(unsigned char *) &read_resp, 1);
-	      state=RECEIVE_CMD;
+	      state=<<<<<<<<<<<<RECEIVE_CMD>>>>>>>>>>>>;
         return 1;
       
     }

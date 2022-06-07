@@ -9,7 +9,7 @@ wire                 ram_io_axi_ar_ready;
   wire                ram_io_axi_aw_ready;
   wire                ram_io_axi_w_ready;
   wire                ram_io_axi_r_valid;
-  wire       [127:0]   ram_io_axi_r_payload_data;
+  wire       [127:0]  ram_io_axi_r_payload_data;
   wire       [1:0]    ram_io_axi_r_payload_resp;
   wire                ram_io_axi_r_payload_last;
   wire                ram_io_axi_b_valid;
@@ -26,7 +26,7 @@ wire                 ram_io_axi_ar_ready;
   wire       [1:0]    aximaster_masterAxi_aw_payload_burst;
   wire                aximaster_masterAxi_w_valid;
   wire       [127:0]   aximaster_masterAxi_w_payload_data;
-  wire       [3:0]    aximaster_masterAxi_w_payload_strb;
+  wire       [15:0]    aximaster_masterAxi_w_payload_strb;
   wire                aximaster_masterAxi_w_payload_last;
   wire                aximaster_masterAxi_r_ready;
   wire                aximaster_masterAxi_b_ready;
@@ -40,8 +40,8 @@ wire                 ram_io_axi_ar_ready;
     .io_axi_aw_payload_burst (aximaster_masterAxi_aw_payload_burst[1:0]), //i
     .io_axi_w_valid          (aximaster_masterAxi_w_valid              ), //i
     .io_axi_w_ready          (ram_io_axi_w_ready                       ), //o
-    .io_axi_w_payload_data   (aximaster_masterAxi_w_payload_data ), //i
-    .io_axi_w_payload_strb   (aximaster_masterAxi_w_payload_strb[3:0]  ), //i
+    .io_axi_w_payload_data   (aximaster_masterAxi_w_payload_data       ), //i
+    .io_axi_w_payload_strb   (aximaster_masterAxi_w_payload_strb       ), //i
     .io_axi_w_payload_last   (aximaster_masterAxi_w_payload_last       ), //i
     .io_axi_b_valid          (ram_io_axi_b_valid                       ), //o
     .io_axi_b_ready          (aximaster_masterAxi_b_ready              ), //i
@@ -54,7 +54,7 @@ wire                 ram_io_axi_ar_ready;
     .io_axi_ar_payload_burst (aximaster_masterAxi_ar_payload_burst[1:0]), //i
     .io_axi_r_valid          (ram_io_axi_r_valid                       ), //o
     .io_axi_r_ready          (aximaster_masterAxi_r_ready              ), //i
-    .io_axi_r_payload_data   (ram_io_axi_r_payload_data         ), //o
+    .io_axi_r_payload_data   (ram_io_axi_r_payload_data                ), //o
     .io_axi_r_payload_resp   (ram_io_axi_r_payload_resp[1:0]           ), //o
     .io_axi_r_payload_last   (ram_io_axi_r_payload_last                ), //o
     .clk                     (clk                                      ), //i
@@ -69,8 +69,8 @@ wire                 ram_io_axi_ar_ready;
     .masterAxi_aw_payload_burst (aximaster_masterAxi_aw_payload_burst[1:0]), //o
     .masterAxi_w_valid          (aximaster_masterAxi_w_valid              ), //o
     .masterAxi_w_ready          (ram_io_axi_w_ready                       ), //i
-    .masterAxi_w_payload_data   (aximaster_masterAxi_w_payload_data[31:0] ), //o
-    .masterAxi_w_payload_strb   (aximaster_masterAxi_w_payload_strb[3:0]  ), //o
+    .masterAxi_w_payload_data   (aximaster_masterAxi_w_payload_data       ), //o
+    .masterAxi_w_payload_strb   (aximaster_masterAxi_w_payload_strb       ), //o
     .masterAxi_w_payload_last   (aximaster_masterAxi_w_payload_last       ), //o
     .masterAxi_b_valid          (ram_io_axi_b_valid                       ), //i
     .masterAxi_b_ready          (aximaster_masterAxi_b_ready              ), //o
@@ -83,7 +83,7 @@ wire                 ram_io_axi_ar_ready;
     .masterAxi_ar_payload_burst (aximaster_masterAxi_ar_payload_burst[1:0]), //o
     .masterAxi_r_valid          (ram_io_axi_r_valid                       ), //i
     .masterAxi_r_ready          (aximaster_masterAxi_r_ready              ), //o
-    .masterAxi_r_payload_data   (ram_io_axi_r_payload_data[31:0]          ), //i
+    .masterAxi_r_payload_data   (ram_io_axi_r_payload_data                ), //i
     .masterAxi_r_payload_resp   (ram_io_axi_r_payload_resp[1:0]           ), //i
     .masterAxi_r_payload_last   (ram_io_axi_r_payload_last                ), //i
     .clk                        (clk                                      ), //i
@@ -105,6 +105,26 @@ begin
     #(10);
     reset = 1'b0;
     #(100*100);
+      for (integer i=0;i<101;i++)
+    begin
+      ram.ram_symbol15[i]='h0;
+      ram.ram_symbol14[i]='h0;
+      ram.ram_symbol13[i]='h0;
+      ram.ram_symbol12[i]='h0;
+      ram.ram_symbol11[i]='h0;
+      ram.ram_symbol10[i]='h0;
+      ram.ram_symbol9[i]='h0;
+      ram.ram_symbol8[i]='h0;
+      ram.ram_symbol7[i]='h0;
+      ram.ram_symbol6[i]='h0;
+      ram.ram_symbol5[i]='h0;
+      ram.ram_symbol4[i]='h0;
+      ram.ram_symbol3[i]='h0;
+      ram.ram_symbol2[i]='h0;
+      ram.ram_symbol1[i]='h0;
+      ram.ram_symbol0[i]='h0;
+
+    end
     //$finish();
    clk=0;
    forever begin 
