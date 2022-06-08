@@ -140,8 +140,7 @@ extern int axi_server(
       *wdata_payload1=rxBuffer[data_idx+write_data_count*4+1];
       *wdata_payload2=rxBuffer[data_idx+write_data_count*4+2];
       *wdata_payload3=rxBuffer[data_idx+write_data_count*4+3];
-      // write_data_count=(wdata_ready&1)? write_data_count+1:write_data_count;
-      state= ((write_data_count*4*4)==(rxBuffer[size_idx]))?SEND_WRITE_RESP:DRIVE_WRITE_AXI;
+      state = (((write_data_count)*4*4)==(rxBuffer[size_idx]))?SEND_WRITE_RESP:DRIVE_WRITE_AXI;
       *wdata_last=(((write_data_count+1)*4*4)==(rxBuffer[size_idx]))?1:0;
       *wdata_valid= 1;
       return 1;
@@ -193,7 +192,7 @@ extern int axi_server(
   if (state == SEND_READ_RESP)
   {
         printf("read_data_count %d\n",read_data_count);
-        for (int i=0;i<256/4;i++)printf("data to be sent : %08X\n",read_buffer[i]);
+        //for (int i=0;i<256/4;i++)printf("data to be sent : %08X\n",read_buffer[i]);
         unsigned int tmp=0x55667788;
 	      send_to_client(clientFd,(unsigned char *) &tmp, 4);   
         send_to_client(clientFd,(unsigned char *) read_buffer, rxBuffer[size_idx]);

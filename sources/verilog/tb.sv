@@ -585,89 +585,95 @@ module testbench ;
 reg reset;
 reg clk;
 reg clk2;  
-wire                ram_io_axi_ar_ready;
-  wire                ram_io_axi_aw_ready;
-  wire                ram_io_axi_w_ready;
-  wire                ram_io_axi_r_valid;
-  wire       [31:0]   ram_io_axi_r_payload_data;
-  wire       [1:0]    ram_io_axi_r_payload_resp;
-  wire                ram_io_axi_r_payload_last;
-  wire                ram_io_axi_b_valid;
-  wire       [1:0]    ram_io_axi_b_payload_resp;
-  wire                aximaster_masterAxi_ar_valid;
-  wire       [31:0]   aximaster_masterAxi_ar_payload_addr;
-  wire       [7:0]    aximaster_masterAxi_ar_payload_len;
-  wire       [2:0]    aximaster_masterAxi_ar_payload_size;
-  wire       [1:0]    aximaster_masterAxi_ar_payload_burst;
-  wire                aximaster_masterAxi_aw_valid;
-  wire       [31:0]   aximaster_masterAxi_aw_payload_addr;
-  wire       [7:0]    aximaster_masterAxi_aw_payload_len;
-  wire       [2:0]    aximaster_masterAxi_aw_payload_size;
-  wire       [1:0]    aximaster_masterAxi_aw_payload_burst;
-  wire                aximaster_masterAxi_w_valid;
-  wire       [31:0]   aximaster_masterAxi_w_payload_data;
-  wire       [3:0]    aximaster_masterAxi_w_payload_strb;
-  wire                aximaster_masterAxi_w_payload_last;
-  wire                aximaster_masterAxi_r_ready;
-  wire                aximaster_masterAxi_b_ready;
+   wire                ramguard_cpuBus_arready;
+  wire                ramguard_cpuBus_awready;
+  wire                ramguard_cpuBus_wready;
+  wire                ramguard_cpuBus_rvalid;
+  wire       [127:0]  ramguard_cpuBus_rdata;
+  wire       [1:0]    ramguard_cpuBus_rresp;
+  wire                ramguard_cpuBus_rlast;
+  wire                ramguard_cpuBus_bvalid;
+  wire       [1:0]    ramguard_cpuBus_bresp;
+  wire                axiMaster_masterAxi_ar_valid;
+  wire       [24:0]   axiMaster_masterAxi_ar_payload_addr;
+  wire       [7:0]    axiMaster_masterAxi_ar_payload_len;
+  wire       [2:0]    axiMaster_masterAxi_ar_payload_size;
+  wire       [1:0]    axiMaster_masterAxi_ar_payload_burst;
+  wire                axiMaster_masterAxi_aw_valid;
+  wire       [24:0]   axiMaster_masterAxi_aw_payload_addr;
+  wire       [7:0]    axiMaster_masterAxi_aw_payload_len;
+  wire       [2:0]    axiMaster_masterAxi_aw_payload_size;
+  wire       [1:0]    axiMaster_masterAxi_aw_payload_burst;
+  wire                axiMaster_masterAxi_w_valid;
+  wire       [127:0]  axiMaster_masterAxi_w_payload_data;
+  wire       [15:0]   axiMaster_masterAxi_w_payload_strb;
+  wire                axiMaster_masterAxi_w_payload_last;
+  wire                axiMaster_masterAxi_r_ready;
+  wire                axiMaster_masterAxi_b_ready;
+  wire                axiMaster_tcpBus_rsp_valid;
+  wire       [1:0]    axiMaster_tcpBus_rsp_payload;
+  wire                axiMaster_tcpBus_rdata_valid;
+  wire                axiMaster_tcpBus_rdata_payload_last;
+  wire       [127:0]  axiMaster_tcpBus_rdata_payload_fragment;
+  wire                axiMaster_tcpBus_wdata_ready;
 
-  unamed ram (
-    .io_axi_aw_valid         (aximaster_masterAxi_aw_valid             ), //i
-    .io_axi_aw_ready         (ram_io_axi_aw_ready                      ), //o
-    .io_axi_aw_payload_addr  (aximaster_masterAxi_aw_payload_addr[31:0]), //i
-    .io_axi_aw_payload_len   (aximaster_masterAxi_aw_payload_len[7:0]  ), //i
-    .io_axi_aw_payload_size  (aximaster_masterAxi_aw_payload_size[2:0] ), //i
-    .io_axi_aw_payload_burst (aximaster_masterAxi_aw_payload_burst[1:0]), //i
-    .io_axi_w_valid          (aximaster_masterAxi_w_valid              ), //i
-    .io_axi_w_ready          (ram_io_axi_w_ready                       ), //o
-    .io_axi_w_payload_data   (aximaster_masterAxi_w_payload_data[31:0] ), //i
-    .io_axi_w_payload_strb   (aximaster_masterAxi_w_payload_strb[3:0]  ), //i
-    .io_axi_w_payload_last   (aximaster_masterAxi_w_payload_last       ), //i
-    .io_axi_b_valid          (ram_io_axi_b_valid                       ), //o
-    .io_axi_b_ready          (aximaster_masterAxi_b_ready              ), //i
-    .io_axi_b_payload_resp   (ram_io_axi_b_payload_resp[1:0]           ), //o
-    .io_axi_ar_valid         (aximaster_masterAxi_ar_valid             ), //i
-    .io_axi_ar_ready         (ram_io_axi_ar_ready                      ), //o
-    .io_axi_ar_payload_addr  (aximaster_masterAxi_ar_payload_addr[31:0]), //i
-    .io_axi_ar_payload_len   (aximaster_masterAxi_ar_payload_len[7:0]  ), //i
-    .io_axi_ar_payload_size  (aximaster_masterAxi_ar_payload_size[2:0] ), //i
-    .io_axi_ar_payload_burst (aximaster_masterAxi_ar_payload_burst[1:0]), //i
-    .io_axi_r_valid          (ram_io_axi_r_valid                       ), //o
-    .io_axi_r_ready          (aximaster_masterAxi_r_ready              ), //i
-    .io_axi_r_payload_data   (ram_io_axi_r_payload_data[31:0]          ), //o
-    .io_axi_r_payload_resp   (ram_io_axi_r_payload_resp[1:0]           ), //o
-    .io_axi_r_payload_last   (ram_io_axi_r_payload_last                ), //o
-    .clk                     (clk                                      ), //i
-    .reset                   (reset                                    )  //i
+  Axi4RamGuardWrapper ramguard (
+    .cpuBus_awvalid (axiMaster_masterAxi_aw_valid             ), //i
+    .cpuBus_awready (ramguard_cpuBus_awready                  ), //o
+    .cpuBus_awaddr  (axiMaster_masterAxi_aw_payload_addr[24:0]), //i
+    .cpuBus_awlen   (axiMaster_masterAxi_aw_payload_len[7:0]  ), //i
+    .cpuBus_awsize  (axiMaster_masterAxi_aw_payload_size[2:0] ), //i
+    .cpuBus_awburst (axiMaster_masterAxi_aw_payload_burst[1:0]), //i
+    .cpuBus_wvalid  (axiMaster_masterAxi_w_valid              ), //i
+    .cpuBus_wready  (ramguard_cpuBus_wready                   ), //o
+    .cpuBus_wdata   (axiMaster_masterAxi_w_payload_data[127:0]), //i
+    .cpuBus_wstrb   (axiMaster_masterAxi_w_payload_strb[15:0] ), //i
+    .cpuBus_wlast   (axiMaster_masterAxi_w_payload_last       ), //i
+    .cpuBus_bvalid  (ramguard_cpuBus_bvalid                   ), //o
+    .cpuBus_bready  (axiMaster_masterAxi_b_ready              ), //i
+    .cpuBus_bresp   (ramguard_cpuBus_bresp[1:0]               ), //o
+    .cpuBus_arvalid (axiMaster_masterAxi_ar_valid             ), //i
+    .cpuBus_arready (ramguard_cpuBus_arready                  ), //o
+    .cpuBus_araddr  (axiMaster_masterAxi_ar_payload_addr[24:0]), //i
+    .cpuBus_arlen   (axiMaster_masterAxi_ar_payload_len[7:0]  ), //i
+    .cpuBus_arsize  (axiMaster_masterAxi_ar_payload_size[2:0] ), //i
+    .cpuBus_arburst (axiMaster_masterAxi_ar_payload_burst[1:0]), //i
+    .cpuBus_rvalid  (ramguard_cpuBus_rvalid                   ), //o
+    .cpuBus_rready  (axiMaster_masterAxi_r_ready              ), //i
+    .cpuBus_rdata   (ramguard_cpuBus_rdata[127:0]             ), //o
+    .cpuBus_rresp   (ramguard_cpuBus_rresp[1:0]               ), //o
+    .cpuBus_rlast   (ramguard_cpuBus_rlast                    ), //o
+    .ACLK           (clk                                 ), //i
+    .ARESETn        (!reset                              )  //i
   );
-   axi_dpi axi_dpi (
-    .masterAxi_aw_valid         (aximaster_masterAxi_aw_valid             ), //o
-    .masterAxi_aw_ready         (ram_io_axi_aw_ready                      ), //i
-    .masterAxi_aw_payload_addr  (aximaster_masterAxi_aw_payload_addr[31:0]), //o
-    .masterAxi_aw_payload_len   (aximaster_masterAxi_aw_payload_len[7:0]  ), //o
-    .masterAxi_aw_payload_size  (aximaster_masterAxi_aw_payload_size[2:0] ), //o
-    .masterAxi_aw_payload_burst (aximaster_masterAxi_aw_payload_burst[1:0]), //o
-    .masterAxi_w_valid          (aximaster_masterAxi_w_valid              ), //o
-    .masterAxi_w_ready          (ram_io_axi_w_ready                       ), //i
-    .masterAxi_w_payload_data   (aximaster_masterAxi_w_payload_data[31:0] ), //o
-    .masterAxi_w_payload_strb   (aximaster_masterAxi_w_payload_strb[3:0]  ), //o
-    .masterAxi_w_payload_last   (aximaster_masterAxi_w_payload_last       ), //o
-    .masterAxi_b_valid          (ram_io_axi_b_valid                       ), //i
-    .masterAxi_b_ready          (aximaster_masterAxi_b_ready              ), //o
-    .masterAxi_b_payload_resp   (ram_io_axi_b_payload_resp[1:0]           ), //i
-    .masterAxi_ar_valid         (aximaster_masterAxi_ar_valid             ), //o
-    .masterAxi_ar_ready         (ram_io_axi_ar_ready                      ), //i
-    .masterAxi_ar_payload_addr  (aximaster_masterAxi_ar_payload_addr[31:0]), //o
-    .masterAxi_ar_payload_len   (aximaster_masterAxi_ar_payload_len[7:0]  ), //o
-    .masterAxi_ar_payload_size  (aximaster_masterAxi_ar_payload_size[2:0] ), //o
-    .masterAxi_ar_payload_burst (aximaster_masterAxi_ar_payload_burst[1:0]), //o
-    .masterAxi_r_valid          (ram_io_axi_r_valid                       ), //i
-    .masterAxi_r_ready          (aximaster_masterAxi_r_ready              ), //o
-    .masterAxi_r_payload_data   (ram_io_axi_r_payload_data[31:0]          ), //i
-    .masterAxi_r_payload_resp   (ram_io_axi_r_payload_resp[1:0]           ), //i
-    .masterAxi_r_payload_last   (ram_io_axi_r_payload_last                ), //i
-    .clk                        (clk                                      ), //i
-    .reset                      (reset                                    )  //i
+  axi_dpi axiMaster (
+    .masterAxi_aw_valid            (axiMaster_masterAxi_aw_valid                  ), //o
+    .masterAxi_aw_ready            (ramguard_cpuBus_awready                       ), //i
+    .masterAxi_aw_payload_addr     (axiMaster_masterAxi_aw_payload_addr[24:0]     ), //o
+    .masterAxi_aw_payload_len      (axiMaster_masterAxi_aw_payload_len[7:0]       ), //o
+    .masterAxi_aw_payload_size     (axiMaster_masterAxi_aw_payload_size[2:0]      ), //o
+    .masterAxi_aw_payload_burst    (axiMaster_masterAxi_aw_payload_burst[1:0]     ), //o
+    .masterAxi_w_valid             (axiMaster_masterAxi_w_valid                   ), //o
+    .masterAxi_w_ready             (ramguard_cpuBus_wready                        ), //i
+    .masterAxi_w_payload_data      (axiMaster_masterAxi_w_payload_data[127:0]     ), //o
+    .masterAxi_w_payload_strb      (axiMaster_masterAxi_w_payload_strb[15:0]      ), //o
+    .masterAxi_w_payload_last      (axiMaster_masterAxi_w_payload_last            ), //o
+    .masterAxi_b_valid             (ramguard_cpuBus_bvalid                        ), //i
+    .masterAxi_b_ready             (axiMaster_masterAxi_b_ready                   ), //o
+    .masterAxi_b_payload_resp      (ramguard_cpuBus_bresp[1:0]                    ), //i
+    .masterAxi_ar_valid            (axiMaster_masterAxi_ar_valid                  ), //o
+    .masterAxi_ar_ready            (ramguard_cpuBus_arready                       ), //i
+    .masterAxi_ar_payload_addr     (axiMaster_masterAxi_ar_payload_addr[24:0]     ), //o
+    .masterAxi_ar_payload_len      (axiMaster_masterAxi_ar_payload_len[7:0]       ), //o
+    .masterAxi_ar_payload_size     (axiMaster_masterAxi_ar_payload_size[2:0]      ), //o
+    .masterAxi_ar_payload_burst    (axiMaster_masterAxi_ar_payload_burst[1:0]     ), //o
+    .masterAxi_r_valid             (ramguard_cpuBus_rvalid                        ), //i
+    .masterAxi_r_ready             (axiMaster_masterAxi_r_ready                   ), //o
+    .masterAxi_r_payload_data      (ramguard_cpuBus_rdata[127:0]                  ), //i
+    .masterAxi_r_payload_resp      (ramguard_cpuBus_rresp[1:0]                    ), //i
+    .masterAxi_r_payload_last      (ramguard_cpuBus_rlast                         ), //i
+    .clk                            (clk                                      ), //i
+    .reset                           (reset                                    )  //i
   );
 
 
