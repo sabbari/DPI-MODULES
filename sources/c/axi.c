@@ -60,6 +60,7 @@ extern int axi_server(
                       const unsigned int rsp_payload,
                       const unsigned int rsp_valid,                      
                       int port, int blocking,
+                      int word_size,
                       int *datacount)
 {
 
@@ -136,11 +137,11 @@ extern int axi_server(
      
       printf("DRIVE_WRITE_AXI, write_data_count=%d,rxBuffer[size_idx]= %d, wdata_ready=%d, size %d \n",write_data_count,rxBuffer[size_idx],wdata_ready&1,*size);
       write_data_count=(wdata_ready&1)? write_data_count+1:write_data_count;
-      *wdata_payload0=rxBuffer[data_idx+write_data_count*4+0];
-      *wdata_payload1=rxBuffer[data_idx+write_data_count*4+1];
-      *wdata_payload2=rxBuffer[data_idx+write_data_count*4+2];
-      *wdata_payload3=rxBuffer[data_idx+write_data_count*4+3];
-      state = (((write_data_count)*4*4)==(rxBuffer[size_idx]))?SEND_WRITE_RESP:DRIVE_WRITE_AXI;
+      *wdata_payload0=rxBuffer[data_idx+write_data_count*word_size/sizeof(uint32_t)+0];
+      *wdata_payload1=rxBuffer[data_idx+write_data_count*word_size/sizeof(uint32_t)+1];
+      *wdata_payload2=rxBuffer[data_idx+write_data_count*word_size/sizeof(uint32_t)+2];
+      *wdata_payload3=rxBuffer[data_idx+write_data_count*word_size/sizeof(uint32_t)+3];
+      state = (((write_data_count)*word_size)==(rxBuffer[size_idx]))?SEND_WRITE_RESP:DRIVE_WRITE_AXI;
       *wdata_last=(((write_data_count+1)*4*4)==(rxBuffer[size_idx]))?1:0;
       *wdata_valid= 1;
       return 1;
@@ -167,7 +168,7 @@ extern int axi_server(
     read_buffer[read_data_count+3]=rdata_payload3;
     read_resp=rsp_payload;
     if(rdata_last)state=SEND_READ_RESP;
-    read_data_count+=4;
+    read_data_count+=word_size/sizeof(uint32_t);
     return 1;
 
   }

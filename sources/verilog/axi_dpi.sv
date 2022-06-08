@@ -62,11 +62,13 @@ import "DPI-C" context function int axi_server(
                       input int rsp_valid,
                       input int port,
                       input int blocking,
+                      input int word_size,
                       output int datacount
 );
 
 parameter port = 7897;
 parameter blocking = 1;
+parameter word_size=16;
 reg [31:0]  addr,size,datacount;
 reg [31:0] wdata_payload0,wdata_payload1,wdata_payload2,wdata_payload3;
 wire [31:0] rdata_payload0,rdata_payload1,rdata_payload2,rdata_payload3;
@@ -101,6 +103,7 @@ begin
             rsp_valid,
             port,
             blocking,
+            word_size,
             datacount);    	
 end
 
