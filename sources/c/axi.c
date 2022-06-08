@@ -18,7 +18,8 @@ enum STATE
   DRIVE_READ_AXI,
   RECEIVE_READ_DATA,
   SEND_WRITE_RESP,
-  SEND_READ_RESP
+  SEND_READ_RESP,
+  SIM_EXIT
 };
 int saferead(int fd, const void *p, size_t want) {
   int ret;
@@ -129,6 +130,7 @@ extern int axi_server(
     rxBuffer[mask_idx],rxBuffer[addr_idx]);
     write_data_count=0;
     state = (rxBuffer[flags_idx] & 1)? DRIVE_WRITE_AXI:DRIVE_READ_AXI;
+    state=(!rxBuffer[size_idx])? SIM_EXIT:state;
     return  1; 
   }
 
@@ -201,6 +203,14 @@ extern int axi_server(
 	      state=RECEIVE_CMD;
         return 1;
       
+    }
+    if(state==SIM_EXIT){
+        
+        uint64_t tmp=0x12345678;
+	      send_to_client(clientFd,(unsigned char *) &tmp, 8);   
+        tmp=0;
+	      send_to_client(clientFd,(unsigned char *) &tmp, 1);   
+        return 0xdead;
     }
   
   return 0;

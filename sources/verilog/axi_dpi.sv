@@ -80,10 +80,11 @@ reg rdata_ready;
 wire rdata_valid,rdata_last;
 wire wdata_ready;
 int value ;
+int return_value;
 always @(posedge clk)
 begin
 
-	axi_server(addr,
+	return_value = axi_server(addr,
             size,
             wdata_valid,
             wdata_ready,
@@ -105,6 +106,10 @@ begin
             blocking,
             word_size,
             datacount);    	
+    if(return_value=='hdead)begin
+    $finish();
+    end
+
 end
 
  simpleAxi4Master aximaster(
