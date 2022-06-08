@@ -62,8 +62,7 @@ import "DPI-C" context function int axi_server(
                       input int rsp_valid,
                       input int port,
                       input int blocking,
-                      input int word_size,
-                      output int datacount
+                      input int word_size
 );
 
 parameter port = 7897;
@@ -104,8 +103,7 @@ begin
             rsp_valid,
             port,
             blocking,
-            word_size,
-            datacount);    	
+            word_size);    	
     if(return_value=='hdead)begin
     $finish();
     end
