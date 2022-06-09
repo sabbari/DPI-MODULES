@@ -3,6 +3,7 @@ The projects contains the following modules :
 - spi slave : that writes the characters received to stdout.
 - spi master : opens a tcp port, then establish a bidirectionnal communication, the user can use tcp_clients/spi_tcpclient.py to send and display the received characters.
 - jtag slave : opens a tcp port, then drives tck, tdi, tms, and/or sends back tdo vlaues, according the the received value on that port.
+- axi master :  opens a tcp port, and drive Axi
   
   
 # Folder contents :
@@ -14,11 +15,13 @@ The projects contains the following modules :
 │   │   ├── jtag.c
 │   │   ├── main.c
 │   │   ├── spi.c
+│    │   ├── axi.c
 │   │   └── tcp_functions.c
 │   └── verilog
 │       ├── jtag_dpi.sv
-        ├── spi_slave.v
+│       ├── spi_slave.v
 │       ├── spiMaster_dpi.sv
+│       │── axi_dpi.sv  
 │       └── spiSlave_dpi.sv
 └── tcp_clients
     └── spi_tcpclient.py
