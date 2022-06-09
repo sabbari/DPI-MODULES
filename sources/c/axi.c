@@ -143,6 +143,7 @@ extern int axi_server(
   }
   if(state==DRIVE_READ_AXI){
     // printf("DRIVE_READ_AXI \n");
+      read_resp=0;
       *rdata_ready=1;
       state=RECEIVE_READ_DATA;
       read_data_count=0;
@@ -160,7 +161,7 @@ extern int axi_server(
     read_buffer[read_data_count+1]=rdata_payload1;
     read_buffer[read_data_count+2]=rdata_payload2;
     read_buffer[read_data_count+3]=rdata_payload3;
-    read_resp=rsp_payload;
+    read_resp|=rsp_payload;
     if(rdata_last)state=SEND_READ_RESP;
     read_data_count+=word_size/sizeof(uint32_t);
     return 1;
