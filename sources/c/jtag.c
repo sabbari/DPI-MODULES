@@ -33,7 +33,12 @@ extern int jtag_server(svBit *tck, svBit *tms, svBit *tdi,
       }
 
   if (state==RECEIVE_JTAG_BUFFER){ 
-       if(read(clientFd, buffer,sizeof(buffer)) > 0){
+    int val_read;
+       if((val_read =read(clientFd, buffer,sizeof(buffer)))== 0){
+        state=WAIT_CLIENT;
+        return 1;
+       }
+       if(val_read>0){
        state= DRIVE_JTAG_SIGNALS;
         return 1;
       }
